@@ -1,8 +1,8 @@
 .DS_store
 node_modules
 .idea
-lib
-bin
+/lib
+/bin
 
 ### Node template
 # Logs
