@@ -2,7 +2,7 @@
   "name": "confetti-generator",
   "version": "0.1.5",
   "description": "Generator utilities for Confetti.",
-  "main": "lib/index.js",
+  "main": "lib/generator.js",
   "scripts": {
     "clean:bin": "rimraf ./bin/*",
     "clean:lib": "rimraf ./lib/*",
