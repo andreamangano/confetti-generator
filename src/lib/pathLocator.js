@@ -30,4 +30,5 @@ class PathLocator {
     this._paths = obj;
   }
 }
-module.exports = PathLocator;
+export default PathLocator;
+
