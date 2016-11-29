@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "6"
+  - "5"
+  - "4"
+script:
+  - npm run test:cover
+install:
+  - npm install --dev
+before_install:
+  - "npm update -g npm"
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
