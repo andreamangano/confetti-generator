@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import * as tasks from './tasks';
 import * as utils from './utils';
-const PathLocator = require('./pathLocator');
+import PathLocator from './pathLocator';
 const slideNavigation = require('./slideNavigation');
 const sIsRelease = Symbol('release');
 /*
@@ -138,5 +138,4 @@ class Generator {
   compileImages(cb) {
   }
 }
-
-module.exports = Generator;
+export default Generator;
