@@ -49,11 +49,6 @@ describe('Generator', function() {
         new Generator(config, true, {});
       }).should.throw(Error);
     });
-    it('should throw an error if you call a class as a function', function() {
-      (function() {
-        Generator(config, true);
-      }).should.throw(Error);
-    });
   });
   describe('compileIndexView( locals )', function() {
     const _src = config.sources.index;

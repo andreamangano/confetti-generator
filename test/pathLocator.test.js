@@ -26,11 +26,6 @@ describe("PathLocator", function() {
         new PathLocator(_undefinedObj);
       }).should.throw(Error);
     });
-    it('should throw an error if you call a class as a function', function() {
-      (function() {
-        PathLocator();
-      }).should.throw(Error);
-    });
   });
   describe('paths', function() {
     it('should throw if it is not a object', function() {
