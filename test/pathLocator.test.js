@@ -1,5 +1,5 @@
 'use strict';
-const PathLocator = require('./../src/lib/pathLocator');
+import PathLocator from './../src/lib/pathLocator';
 describe("PathLocator", function() {
   const objPaths = {
     sources: {

@@ -1,5 +1,5 @@
 'use strict';
-const Generator = require('./../src/lib/generator');
+import Generator from './../src/lib/generator';
 import path from 'path';
 import fs from 'fs';
 import del from 'del';
