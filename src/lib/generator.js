@@ -1,4 +1,5 @@
 'use strict';
+require('babel-polyfill');
 import _ from 'lodash';
 import * as tasks from './tasks';
 import * as utils from './utils';
@@ -11,7 +12,7 @@ const sIsRelease = Symbol('release');
  parameter to define the working environment.
  */
 class Generator {
-  constructor(config, isRelease) {
+  constructor(paths, isRelease) {
     /*
      Check on the arguments count
      */
@@ -21,7 +22,7 @@ class Generator {
         + ' -isRelease (Boolen)'
       );
     }
-    this.pathLocator = new PathLocator(config);
+    this.pathLocator = new PathLocator(paths);
     this[sIsRelease] = isRelease;
   }
   /*
