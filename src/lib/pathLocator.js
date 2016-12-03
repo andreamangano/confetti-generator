@@ -5,7 +5,7 @@ class PathLocator {
     if (arguments.length === 1
       && objPaths !== 'undefined'
       && typeof objPaths !== 'object') {
-      throw new Error('The parameter -objPaths- must be a string.');
+      throw new Error('The parameter -objPaths- must be an object.');
     }
     if (objPaths) {
       this._paths = objPaths;
