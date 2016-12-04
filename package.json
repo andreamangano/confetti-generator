@@ -2,7 +2,6 @@
   "name": "confetti-generator",
   "version": "0.1.8",
   "description": "Generator utilities for Confetti.",
-  "main": "lib/generator.js",
   "scripts": {
     "clean:bin": "rimraf ./bin/*",
     "clean:lib": "rimraf ./lib/*",
@@ -14,6 +13,7 @@
     "test": "./node_modules/.bin/mocha --compilers js:babel-core/register --require babel-polyfill",
     "test:cover": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- test/**/*.test.js --compilers js:babel-register --require './test/common.js' && ./node_modules/.bin/codecov"
   },
+  "main": "./lib/generator.js",
   "bin": {
     "confetti-generator": "./bin/generator.js"
   },
