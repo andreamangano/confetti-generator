@@ -1,6 +1,6 @@
 {
   "name": "confetti-generator",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Generator utilities for Confetti.",
   "main": "lib/generator.js",
   "scripts": {
