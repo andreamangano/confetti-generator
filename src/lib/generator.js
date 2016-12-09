@@ -107,12 +107,12 @@ class Generator {
   compileStyles(sassConfig, cb) {
     return new Promise((resolve, reject) => {
       tasks.compileStyle(
-        this.pathLocator.getPath('sources.style'),
-        this.pathLocator.getPath('destinations.style'),
+        this.pathLocator.getPath('sources.styles'),
+        this.pathLocator.getPath('destinations.styles'),
         'style.css',
         sassConfig,
         this[sIsRelease]
-        )
+      )
         .then(results => {
           if (cb) {
             cb(null, results);
