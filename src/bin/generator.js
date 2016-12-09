@@ -11,6 +11,14 @@ stdin.on('data', buf => {
 stdin.on('end', () => {
   const data = JSON.parse(content);
   const g = new Generator(data.paths, true);
-  g.compileViews(data);
-  console.log('data.theme: ' + data.theme);
+  Promise.all([
+    g.compileViews(data),
+    g.compileStyles(data.compilers.sass)
+  ])
+    .then(results => {
+      console.log('All done');
+    })
+    .catch(error => {
+      console.log(error);
+    });
 });
