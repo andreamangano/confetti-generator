@@ -4,6 +4,9 @@ import _ from 'lodash';
 import * as tasks from './tasks';
 import * as utils from './utils';
 import PathLocator from './pathLocator';
+import sass from 'node-sass';
+import sassUtilsPkg from 'node-sass-utils';
+const sassUtils = sassUtilsPkg(sass);
 const slideNavigation = require('./slideNavigation');
 const sIsRelease = Symbol('release');
 /*
@@ -104,8 +107,15 @@ class Generator {
   /*
    Method to compile the selected theme style
    */
-  compileStyles(sassConfig, cb) {
+  compileStyles(sassConfig, themeConfig, cb) {
     return new Promise((resolve, reject) => {
+      if (!sassConfig.functions) {
+        sassConfig.functions = {};
+      }
+      // Add template data to sass function
+      sassConfig.functions['getThemeConfig()'] = () => {
+        return sassUtils.castToSass(themeConfig);
+      };
       tasks.compileStyle(
         this.pathLocator.getPath('sources.styles'),
         this.pathLocator.getPath('destinations.styles'),
