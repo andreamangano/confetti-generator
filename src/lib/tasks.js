@@ -22,7 +22,8 @@ export function compileView(src, dest, fileName, locals, release) {
       minifyJS: true,
       minifyCSS: true
     };
-    gulp.src(src)
+    gulp
+      .src(src)
       .pipe($.pug(pugOptions).on('error', error => reject(error)))
       .pipe($.if(release, $.htmlmin(htmlMinOptions)))
       .pipe($.rename(fileName).on('error', error => reject(error)))
@@ -47,7 +48,8 @@ export function compileStyle(src, dest, filename, sassConfig, release) {
       'android >= 4.4',
       'bb >= 10'
     ];
-    gulp.src(src)
+    gulp
+      .src(src)
       .pipe($.if(release, $.sourcemaps.init()))
       // .pipe($.if(release, $.cache('scsslint')))
       //  .pipe( $.if( !release, $.lint() ) )
@@ -68,6 +70,18 @@ export function compileStyle(src, dest, filename, sassConfig, release) {
       )
       .pipe($.rename(filename))
       .pipe($.if(release, $.sourcemaps.write('.')))
+      .pipe(gulp.dest(dest))
+      .on('end', () => resolve())
+      .on('error', error => reject(error));
+  });
+}
+/*
+ Generic function to copy files
+ */
+export function copy(src, dest) {
+  return new Promise((resolve, reject) => {
+    gulp
+      .src(src)
       .pipe(gulp.dest(dest))
       .on('end', () => resolve())
       .on('error', error => reject(error));

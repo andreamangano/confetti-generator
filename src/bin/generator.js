@@ -23,10 +23,7 @@ const consoleLog = args.silent ? () => {} : console.log;
 
 const generateDeck = data => {
   const g = new Generator(data.paths, true);
-  Promise.all([
-    g.compileViews(data),
-    g.compileStyles(data.compilers.sass, data.themeConfig)
-  ])
+  g.generate(data)
     .then(results => {
       consoleLog(` ${chalk.bold.white('Speaker Deck')} --> ${chalk.cyan('Built')}`);
     })

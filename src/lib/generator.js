@@ -140,13 +140,42 @@ class Generator {
   /*
    Method to compile scripts
    */
-  compileScripts(cb) {
-    // TODO
+  compileJavascripts() {
+    return tasks.copy(
+      this.pathLocator.getPath('sources.javascript'),
+      this.pathLocator.getPath('destinations.javascript')
+    );
+  }
+  /*
+   Method to compile fonts
+   */
+  compileFonts() {
+    return tasks.copy(
+      this.pathLocator.getPath('sources.fonts'),
+      this.pathLocator.getPath('destinations.fonts')
+    );
   }
   /*
    Method to compile images
    */
-  compileImages(cb) {
+  compileImages() {
+    return tasks.copy(
+      this.pathLocator.getPath('sources.images'),
+      this.pathLocator.getPath('destinations.images')
+    );
+  }
+  /*
+   Method to generate all stuff
+  */
+  generate(data) {
+    return Promise.all([
+      this.compileViews(data),
+      this.compileStyles(data.compilers.sass, data.themeConfig),
+      this.compileFonts(),
+      this.compileImages(),
+      this.compileJavascripts()
+    ]);
   }
 }
+
 export default Generator;
