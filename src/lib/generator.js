@@ -149,7 +149,7 @@ class Generator {
   /*
    Method to compile fonts
    */
-  compileFonts() {
+  copyFonts() {
     return tasks.copy(
       this.pathLocator.getPath('sources.fonts'),
       this.pathLocator.getPath('destinations.fonts')
@@ -158,7 +158,7 @@ class Generator {
   /*
    Method to compile images
    */
-  compileImages() {
+  copyImages() {
     return tasks.copy(
       this.pathLocator.getPath('sources.images'),
       this.pathLocator.getPath('destinations.images')
@@ -171,8 +171,8 @@ class Generator {
     return Promise.all([
       this.compileViews(data),
       this.compileStyles(data.compilers.sass, data.themeConfig),
-      this.compileFonts(),
-      this.compileImages(),
+      this.copyFonts(),
+      this.copyImages(),
       this.compileJavascripts()
     ]);
   }
