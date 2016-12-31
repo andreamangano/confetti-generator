@@ -93,9 +93,9 @@ class Generator {
     return new Promise((resolve, reject) => {
       data.slides = this.fixSlides(data.slides);
       Promise.all([
-          this.compileIndexView(data),
-          this.compileSlideViews(data)
-        ])
+        this.compileIndexView(data),
+        this.compileSlideViews(data)
+      ])
         .then(results => {
           if (cb) {
             cb(null, results);
@@ -129,7 +129,7 @@ class Generator {
         'style.css',
         sassConfig,
         this[sIsRelease]
-        )
+      )
         .then(results => {
           if (cb) {
             cb(null, results);
