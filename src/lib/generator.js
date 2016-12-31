@@ -6,6 +6,7 @@ import * as utils from './utils';
 import PathLocator from './pathLocator';
 import sass from 'node-sass';
 import sassUtilsPkg from 'node-sass-utils';
+import marked from 'marked';
 const sassUtils = sassUtilsPkg(sass);
 const slideNavigation = require('./slideNavigation');
 const sIsRelease = Symbol('release');
@@ -28,6 +29,7 @@ class Generator {
     this.pathLocator = new PathLocator(paths);
     this[sIsRelease] = isRelease;
   }
+
   /*
    Method to create an url and an index for each slide
    */
@@ -38,6 +40,7 @@ class Generator {
       return slide;
     });
   }
+
   /*
    Method to compile the index view (from the selected theme)
    of a given language
@@ -51,6 +54,7 @@ class Generator {
       this[sIsRelease]
     );
   }
+
   /*
    Method to compile the page template for every single slide
    */
@@ -59,6 +63,9 @@ class Generator {
       const _data = _.cloneDeep(data);
       const promises = [];
       _data.slides.forEach((slide, i) => {
+        if (slide.description) {
+          slide.description = marked(slide.description);
+        }
         // Set current slide object as local data
         _data.slide = slide;
         // set slider navigation as local data
@@ -122,7 +129,7 @@ class Generator {
         'style.css',
         sassConfig,
         this[sIsRelease]
-      )
+        )
         .then(results => {
           if (cb) {
             cb(null, results);
@@ -137,6 +144,7 @@ class Generator {
         });
     });
   }
+
   /*
    Method to compile scripts
    */
@@ -146,6 +154,7 @@ class Generator {
       this.pathLocator.getPath('destinations.javascript')
     );
   }
+
   /*
    Method to compile fonts
    */
@@ -155,6 +164,7 @@ class Generator {
       this.pathLocator.getPath('destinations.fonts')
     );
   }
+
   /*
    Method to compile images
    */
@@ -164,9 +174,10 @@ class Generator {
       this.pathLocator.getPath('destinations.images')
     );
   }
+
   /*
    Method to generate all stuff
-  */
+   */
   generate(data) {
     return Promise.all([
       this.compileViews(data),
@@ -177,5 +188,4 @@ class Generator {
     ]);
   }
 }
-
 export default Generator;
