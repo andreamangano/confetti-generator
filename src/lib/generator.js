@@ -93,9 +93,9 @@ class Generator {
     return new Promise((resolve, reject) => {
       data.slides = this.fixSlides(data.slides);
       Promise.all([
-        this.compileIndexView(data),
-        this.compileSlideViews(data)
-      ])
+          this.compileIndexView(data),
+          this.compileSlideViews(data)
+        ])
         .then(results => {
           if (cb) {
             cb(null, results);
@@ -168,6 +168,16 @@ class Generator {
   /*
    Method to compile images
    */
+  copyCovers() {
+    return tasks.copy(
+      this.pathLocator.getPath('sources.covers'),
+      this.pathLocator.getPath('destinations.covers')
+    );
+  }
+
+  /*
+   Method to compile images
+   */
   copyImages() {
     return tasks.copy(
       this.pathLocator.getPath('sources.images'),
@@ -184,6 +194,7 @@ class Generator {
       this.compileStyles(data.compilers.sass, data.themeConfig),
       this.copyFonts(),
       this.copyImages(),
+      this.copyCovers(),
       this.compileJavascripts()
     ]);
   }
