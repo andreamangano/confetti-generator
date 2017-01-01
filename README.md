@@ -1,4 +1,6 @@
-# Confetti Generator (WORK IN PROGRESS...)
+# Confetti Generator
+### --[ The project is still under construction.]--
+---
 Generator for [Confetti](https://github.com/andreamangano/confetti-cli), a tool for enriching your online slide decks.
 
 [![Build Status](https://travis-ci.org/andreamangano/confetti-generator.svg?branch=master)](https://travis-ci.org/andreamangano/confetti-generator)
