@@ -190,12 +190,12 @@ class Generator {
    */
   generate(data) {
     return Promise.all([
-      this.compileViews(data),
-      this.compileStyles(data.compilers.sass, data.themeConfig),
       this.copyFonts(),
       this.copyImages(),
       this.copyCovers(),
-      this.compileJavascripts()
+      this.compileJavascripts(),
+      this.compileStyles(data.compilers.sass, data.themeConfig),
+      this.compileViews(data)
     ]);
   }
 }
