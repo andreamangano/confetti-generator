@@ -196,6 +196,10 @@ class Generator {
     return new Promise((resolve, reject) => {
       const promises = [];
       // TODO: Get theme config from data
+      const settings = {
+        width: 300,
+        quality: 90
+      };
       const coversDir = this.pathLocator.getPath('sources.covers');
       if (utils.dirExists(coversDir)) {
         utils.listFile(this.pathLocator.getPath('sources.covers'))
