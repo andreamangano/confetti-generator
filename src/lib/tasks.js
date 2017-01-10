@@ -3,8 +3,10 @@ import _ from 'lodash';
 import gulp from 'gulp';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import mqpacker from 'css-mqpacker';
-import scssLint from 'gulp-scss-lint';
+// import scssLint from 'gulp-scss-lint';
+import jimp from 'jimp';
 const $ = gulpLoadPlugins();
+
 /*
  Generic function to compile a single view
  */
@@ -85,5 +87,28 @@ export function copy(src, dest) {
       .pipe(gulp.dest(dest))
       .on('end', () => resolve())
       .on('error', error => reject(error));
+  });
+}
+/*
+ Generic function to resize a given image
+ */
+export function resizeImage(src, dest, settings) {
+  const _settings = Object.assign({
+    width: 250,
+    quality: 80
+  }, settings);
+  return new Promise((resolve, reject) => {
+    jimp.read(src).then(image => {
+      image.resize(_settings.width, jimp.AUTO)
+        .quality(_settings.quality)
+        .write(dest, err => {
+          if (err) {
+            reject(err);
+          }
+          resolve(image);
+        });
+    }).catch(err => {
+      reject(err);
+    });
   });
 }
