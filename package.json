@@ -68,6 +68,7 @@
     "gulp-scss-lint": "^0.4.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
+    "jimp": "^0.2.27",
     "lodash": "^4.16.4",
     "marked": "^0.3.6",
     "node-sass": "^3.13.1",
