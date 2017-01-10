@@ -7,6 +7,8 @@ import PathLocator from './pathLocator';
 import sass from 'node-sass';
 import sassUtilsPkg from 'node-sass-utils';
 import marked from 'marked';
+import path from 'path';
+import fs from 'fs';
 const sassUtils = sassUtilsPkg(sass);
 const slideNavigation = require('./slideNavigation');
 const sIsRelease = Symbol('release');
@@ -37,6 +39,18 @@ class Generator {
     return slides.map((slide, i) => {
       slide.index = i + 1;
       slide.url = utils.generateSlideUrl(slide.title, slide.index);
+      if (slide.cover && typeof slide.cover === 'string') {
+        // TODO: create a dedicated function
+        // Get format from theme
+        const fileCover = slide.cover;
+        slide.cover = {
+          file: fileCover,
+          format: {
+            original: path.join(this.pathLocator.getPath('to.covers'), fileCover),
+            small: path.join(this.pathLocator.getPath('to.covers'), `small-${fileCover}`)
+          }
+        };
+      }
       return slide;
     });
   }
@@ -47,7 +61,7 @@ class Generator {
    */
   compileIndexView(locals) {
     return tasks.compileView(
-      this.pathLocator.getPath('sources.index'),
+      path.join(this.pathLocator.getPath('sources.views'), 'index.pug'),
       this.pathLocator.getPath('destinations.index'),
       'index.html',
       locals,
@@ -68,11 +82,11 @@ class Generator {
         }
         // Set current slide object as local data
         _data.slide = slide;
-        // set slider navigation as local data
+        // Set slider navigation as local data
         _data.sliderNav = slideNavigation.create(_data.slides, i);
         promises.push(
           tasks.compileView(
-            this.pathLocator.getPath('sources.slide'),
+            path.join(this.pathLocator.getPath('sources.views'), 'slide.pug'),
             this.pathLocator.getPath('destinations.slide'),
             slide.url,
             _data,
@@ -124,12 +138,12 @@ class Generator {
         return sassUtils.castToSass(themeConfig);
       };
       tasks.compileStyle(
-        this.pathLocator.getPath('sources.styles'),
+        path.join(this.pathLocator.getPath('sources.styles'), '**', '*.scss'),
         this.pathLocator.getPath('destinations.styles'),
         'style.css',
         sassConfig,
         this[sIsRelease]
-      )
+        )
         .then(results => {
           if (cb) {
             cb(null, results);
@@ -150,7 +164,7 @@ class Generator {
    */
   compileJavascripts() {
     return tasks.copy(
-      this.pathLocator.getPath('sources.javascript'),
+      path.join(this.pathLocator.getPath('sources.javascript'), '**', '*.js'),
       this.pathLocator.getPath('destinations.javascript')
     );
   }
@@ -160,27 +174,66 @@ class Generator {
    */
   copyFonts() {
     return tasks.copy(
-      this.pathLocator.getPath('sources.fonts'),
+      path.join(this.pathLocator.getPath('sources.fonts'), '**', '*.{eot,ttf,otf,woff,svg}'),
       this.pathLocator.getPath('destinations.fonts')
     );
   }
 
   /*
-   Method to compile images
+   Method to copy deck images (covers included):
    */
-  copyCovers() {
+  copyDeckImages() {
     return tasks.copy(
-      this.pathLocator.getPath('sources.covers'),
-      this.pathLocator.getPath('destinations.covers')
+      path.join(this.pathLocator.getPath('sources.deckImages'), '**', '*.{svg,png,jpg,jpeg,gif}'),
+      this.pathLocator.getPath('destinations.deckImages')
     );
   }
 
   /*
-   Method to compile images
+   Method to resize covers Images
+   */
+  resizeCovers(themeConfig) {
+    return new Promise((resolve, reject) => {
+      const promises = [];
+      // TODO: Get theme config from data
+      const coversDir = this.pathLocator.getPath('sources.covers');
+      if (utils.dirExists(coversDir)) {
+        utils.listFile(this.pathLocator.getPath('sources.covers'))
+          .filter(file => {
+            return /\.(jpe?g|png|gif)$/i.test(file);
+          })
+          .forEach((file, i) => {
+            promises[i] = tasks.resizeImage(
+              path.join(this.pathLocator.getPath('sources.covers'), file),
+              path.join(this.pathLocator.getPath('destinations.covers'), `small-${file}`),
+              settings
+            );
+          });
+      }
+      return Promise.all(promises)
+        .then(results => resolve(results))
+        .catch(error => reject(error));
+    });
+  }
+
+  compileDeckImages(themeConfig) {
+    return new Promise((resolve, reject) => {
+      this.copyDeckImages()
+        .then(() => {
+          this.resizeCovers(themeConfig)
+            .then(() => resolve())
+            .catch(err => reject(err));
+        })
+        .catch(err => reject(err));
+    });
+  }
+
+  /*
+   Method to compile theme images
    */
   copyImages() {
     return tasks.copy(
-      this.pathLocator.getPath('sources.images'),
+      path.join(this.pathLocator.getPath('sources.images'), '**', '*.{svg,png,jpg,jpeg,gif}'),
       this.pathLocator.getPath('destinations.images')
     );
   }
@@ -192,7 +245,7 @@ class Generator {
     return Promise.all([
       this.copyFonts(),
       this.copyImages(),
-      this.copyCovers(),
+      this.compileDeckImages(data.themeConfig),
       this.compileJavascripts(),
       this.compileStyles(data.compilers.sass, data.themeConfig),
       this.compileViews(data)
