@@ -1,6 +1,6 @@
 {
   "name": "confetti-generator",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Generator utilities for Confetti.",
   "scripts": {
     "clean:bin": "rimraf ./bin/*",
