@@ -7,16 +7,17 @@ describe('Generator', function() {
 
   // increase default timeout in case assert operations take too long (i/o usage)
   this.timeout(8000);
-  let generator;
   const temp = path.join(__dirname, 'temp');
   const config = {
     sources: {
-      index: path.join(temp, 'index.pug'),
-      slide: path.join(temp, 'slide.pug')
+      views: temp
     },
     destinations: {
       index: temp,
       slide: temp
+    },
+    to: {
+      covers: '/'
     }
   };
   const data = {
@@ -28,7 +29,7 @@ describe('Generator', function() {
     ],
     translations: []
   };
-  generator = new Generator(config, true);
+  const generator = new Generator(config, true);
   describe('constructor( config )', function() {
     it('should be created with one properties: pathLocator', function() {
       const _generator = new Generator(config, true);
@@ -51,11 +52,11 @@ describe('Generator', function() {
     });
   });
   describe('compileIndexView( locals )', function() {
-    const _src = config.sources.index;
+    const _src = path.join(config.sources.views, 'index.pug');
     const _locals = {name: 'Bob'};
     const _expectedFile = 'index.html';
     before(function() {
-      fs.writeFileSync(_src, "h1= 'Hello ' + name", 'utf8');
+      fs.writeFileSync(_src, `h1= 'Hello ' + name`, 'utf8');
     });
     it('should bundle into a single file', function(done) {
       generator.compileIndexView(_locals).then(
@@ -67,11 +68,11 @@ describe('Generator', function() {
     });
   });
   describe('compileSlideViews( data )', function() {
-    const _src = config.sources.slide;
+    const _src = path.join(config.sources.views, 'slide.pug');
     const _srcWrongFile = path.join(temp, 'template-2.pug');
     before(function() {
-      fs.writeFileSync(_src, "h1= 'Slide' + slide.title", 'utf8');
-      fs.writeFileSync(_srcWrongFile, "include ./includes/header.pug", 'utf8');
+      fs.writeFileSync(_src, `h1= 'Slide' + slide.title`, 'utf8');
+      fs.writeFileSync(_srcWrongFile, 'include ./includes/header.pug', 'utf8');
     });
     it('should render all template data', function(done) {
       generator.compileSlideViews(data).then(
