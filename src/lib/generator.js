@@ -33,6 +33,19 @@ class Generator {
   }
 
   /*
+    Create a cover object adding the image name, the paths to all formats
+  */
+  createCover(coverName) {
+    return {
+      file: coverName,
+      format: {
+        original: path.join(this.pathLocator.getPath('to.covers'), coverName),
+        small: path.join(this.pathLocator.getPath('to.covers'), `small-${coverName}`)
+      }
+    };
+  }
+
+  /*
    Method to create an url and an index for each slide
    */
   fixSlides(slides) {
@@ -40,16 +53,7 @@ class Generator {
       slide.index = i + 1;
       slide.url = utils.generateSlideUrl(slide.title, slide.index);
       if (slide.cover && typeof slide.cover === 'string') {
-        // TODO: create a dedicated function
-        // Get format from theme
-        const fileCover = slide.cover;
-        slide.cover = {
-          file: fileCover,
-          format: {
-            original: path.join(this.pathLocator.getPath('to.covers'), fileCover),
-            small: path.join(this.pathLocator.getPath('to.covers'), `small-${fileCover}`)
-          }
-        };
+        slide.cover = this.createCover(slide.cover);
       }
       return slide;
     });
@@ -192,7 +196,7 @@ class Generator {
   /*
    Method to resize covers Images
    */
-  resizeCovers(themeConfig) {
+  resizeCovers() {
     return new Promise((resolve, reject) => {
       const promises = [];
       // TODO: Get theme config from data
@@ -220,11 +224,14 @@ class Generator {
     });
   }
 
-  compileDeckImages(themeConfig) {
+  /*
+    Copy the deck images, then resize the cover.
+  */
+  compileDeckImages() {
     return new Promise((resolve, reject) => {
       this.copyDeckImages()
         .then(() => {
-          this.resizeCovers(themeConfig)
+          this.resizeCovers()
             .then(() => resolve())
             .catch(err => reject(err));
         })
@@ -249,7 +256,7 @@ class Generator {
     return Promise.all([
       this.copyFonts(),
       this.copyImages(),
-      this.compileDeckImages(data.themeConfig),
+      this.compileDeckImages(),
       this.compileJavascripts(),
       this.compileStyles(data.compilers.sass, data.themeConfig),
       this.compileViews(data)
