@@ -1,7 +1,7 @@
 {
   "name": "confetti-generator",
   "version": "0.1.19",
-  "description": "Generator utilities for Confetti.",
+  "description": "Generator for Confetti, a tool for enriching your online slide decks.",
   "scripts": {
     "clean:bin": "rimraf ./bin/*",
     "clean:lib": "rimraf ./lib/*",
@@ -67,6 +67,7 @@
     "gulp-sass": "^2.3.2",
     "gulp-scss-lint": "^0.4.0",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.7",
     "jimp": "^0.2.27",
     "lodash": "^4.16.4",
@@ -74,6 +75,7 @@
     "node-sass": "^3.13.1",
     "node-sass-utils": "^1.1.2",
     "object-path": "^0.11.2",
+    "pump": "^1.0.2",
     "yargs": "^6.5.0"
   },
   "devDependencies": {
