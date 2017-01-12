@@ -167,9 +167,10 @@ class Generator {
    Method to compile scripts
    */
   compileJavascripts() {
-    return tasks.copy(
+    return tasks.compileJavascripts(
       path.join(this.pathLocator.getPath('sources.javascript'), '**', '*.js'),
-      this.pathLocator.getPath('destinations.javascript')
+      this.pathLocator.getPath('destinations.javascript'),
+      this[sIsRelease]
     );
   }
 

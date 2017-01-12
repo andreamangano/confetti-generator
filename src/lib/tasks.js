@@ -3,10 +3,10 @@ import _ from 'lodash';
 import gulp from 'gulp';
 import gulpLoadPlugins from 'gulp-load-plugins';
 import mqpacker from 'css-mqpacker';
+import pump from 'pump';
 // import scssLint from 'gulp-scss-lint';
 import jimp from 'jimp';
 const $ = gulpLoadPlugins();
-
 /*
  Generic function to compile a single view
  */
@@ -24,13 +24,35 @@ export function compileView(src, dest, fileName, locals, release) {
       minifyJS: true,
       minifyCSS: true
     };
-    gulp
-      .src(src)
-      .pipe($.pug(pugOptions).on('error', error => reject(error)))
-      .pipe($.if(release, $.htmlmin(htmlMinOptions)))
-      .pipe($.rename(fileName).on('error', error => reject(error)))
-      .pipe(gulp.dest(dest))
-      .on('end', () => resolve());
+    pump([
+      gulp.src(src),
+      $.pug(pugOptions),
+      $.if(release, $.htmlmin(htmlMinOptions)),
+      $.rename(fileName),
+      gulp.dest(dest)
+    ], err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+/*
+ Generic function to javascript
+ */
+export function compileJavascripts(src, dest, release) {
+  return new Promise((resolve, reject) => {
+    pump([
+      gulp.src(src),
+      $.if(release, $.uglify()),
+      gulp.dest(dest)
+    ], err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
   });
 }
 /*
@@ -50,31 +72,33 @@ export function compileStyle(src, dest, filename, sassConfig, release) {
       'android >= 4.4',
       'bb >= 10'
     ];
-    gulp
-      .src(src)
-      .pipe($.if(release, $.sourcemaps.init()))
-      // .pipe($.if(release, $.cache('scsslint')))
-      //  .pipe( $.if( !release, $.lint() ) )
-      .pipe($.sass(sassConfig).on('error', error => reject(error)))
-      .pipe($.autoprefixer({
+    pump([
+      gulp.src(src),
+      $.if(release, $.sourcemaps.init()),
+      // $.if(release, $.cache('scsslint')),
+      // $.if( !release, $.lint() ),
+      $.sass(sassConfig),
+      $.autoprefixer({
         browsers: AUTOPREFIXER_BROWSERS,
         cascade: false
-      }))
-      .pipe(release ? $.cssmin() : $.util.noop())
-      .pipe(
-        $.if(
-          release, $.postcss([
-            mqpacker({
-              sort: true
-            })
-          ])
-        )
-      )
-      .pipe($.rename(filename))
-      .pipe($.if(release, $.sourcemaps.write('.')))
-      .pipe(gulp.dest(dest))
-      .on('end', () => resolve())
-      .on('error', error => reject(error));
+      }),
+      release ? $.cssmin() : $.util.noop(),
+      $.if(
+        release, $.postcss([
+          mqpacker({
+            sort: true
+          })
+        ])
+      ),
+      $.rename(filename),
+      $.if(release, $.sourcemaps.write('.')),
+      gulp.dest(dest)
+    ], err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
   });
 }
 /*
@@ -82,11 +106,15 @@ export function compileStyle(src, dest, filename, sassConfig, release) {
  */
 export function copy(src, dest) {
   return new Promise((resolve, reject) => {
-    gulp
-      .src(src)
-      .pipe(gulp.dest(dest))
-      .on('end', () => resolve())
-      .on('error', error => reject(error));
+    pump([
+      gulp.src(src),
+      gulp.dest(dest)
+    ], err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
   });
 }
 /*
