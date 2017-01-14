@@ -8,7 +8,6 @@ import sass from 'node-sass';
 import sassUtilsPkg from 'node-sass-utils';
 import marked from 'marked';
 import path from 'path';
-import fs from 'fs';
 const sassUtils = sassUtilsPkg(sass);
 const slideNavigation = require('./slideNavigation');
 const sIsRelease = Symbol('release');
@@ -48,10 +47,12 @@ class Generator {
   /*
    Method to create an url and an index for each slide
    */
-  fixSlides(slides) {
+  fixSlides(slides, config) {
     return slides.map((slide, i) => {
       slide.index = i + 1;
-      slide.url = utils.generateSlideUrl(slide.title, slide.index);
+      const baseUrl = utils.generateSlideUrl(slide.title, slide.index);
+      slide.url = path.join(config.releasePrefix, baseUrl);
+      slide.path = baseUrl;
       if (slide.cover && typeof slide.cover === 'string') {
         slide.cover = this.createCover(slide.cover);
       }
@@ -92,7 +93,7 @@ class Generator {
           tasks.compileView(
             path.join(this.pathLocator.getPath('sources.views'), 'slide.pug'),
             this.pathLocator.getPath('destinations.slide'),
-            slide.url,
+            slide.path,
             _data,
             this[sIsRelease]
           )
@@ -109,7 +110,7 @@ class Generator {
    */
   compileViews(data, cb) {
     return new Promise((resolve, reject) => {
-      data.slides = this.fixSlides(data.slides);
+      data.slides = this.fixSlides(data.slides, {releasePrefix: data.releasePrefix});
       Promise.all([
         this.compileIndexView(data),
         this.compileSlideViews(data)
