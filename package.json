@@ -1,6 +1,6 @@
 {
   "name": "confetti-generator",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Generator for Confetti, a tool for enriching your online slide decks.",
   "scripts": {
     "clean:bin": "rimraf ./bin/*",
