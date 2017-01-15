@@ -105,6 +105,7 @@ export function compileStyle(src, dest, filename, sassConfig, release) {
  Generic function to copy files
  */
 export function copy(src, dest) {
+  // TODO: add optimizer
   return new Promise((resolve, reject) => {
     pump([
       gulp.src(src),

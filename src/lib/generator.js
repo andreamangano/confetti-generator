@@ -32,7 +32,7 @@ class Generator {
   }
 
   /*
-    Create a cover object adding the image name, the paths to all formats
+    Create a cover object adding the image name and the paths of all formats
   */
   createCover(coverName) {
     return {
@@ -47,11 +47,11 @@ class Generator {
   /*
    Method to create an url and an index for each slide
    */
-  fixSlides(slides, config) {
+  fixSlides(slides) {
     return slides.map((slide, i) => {
       slide.index = i + 1;
       const baseUrl = utils.generateSlideUrl(slide.title, slide.index);
-      slide.url = path.join(config.releasePrefix, baseUrl);
+      slide.url = baseUrl;
       slide.path = baseUrl;
       if (slide.cover && typeof slide.cover === 'string') {
         slide.cover = this.createCover(slide.cover);
@@ -110,7 +110,7 @@ class Generator {
    */
   compileViews(data, cb) {
     return new Promise((resolve, reject) => {
-      data.slides = this.fixSlides(data.slides, {releasePrefix: data.releasePrefix});
+      data.slides = this.fixSlides(data.slides);
       Promise.all([
         this.compileIndexView(data),
         this.compileSlideViews(data)
