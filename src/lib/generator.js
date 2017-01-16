@@ -23,8 +23,7 @@ class Generator {
      */
     if (arguments.length !== 2) {
       throw new Error(
-        'The class requires two parameters: -context (Context)- and'
-        + ' -isRelease (Boolen)'
+        `The class requires two parameters: -context (Context)- and -isRelease (Boolean)`
       );
     }
     this.pathLocator = new PathLocator(paths);
@@ -32,9 +31,22 @@ class Generator {
   }
 
   /*
+   Utility function to generate the url of a single slide
+   */
+  generateSlideUrl(title, index) {
+    // Clean the title to make it an sane url
+    // It will be the name of the page for the given slide
+    const cleanedSlideTitle = utils.cleanUrl(title.toLowerCase());
+    // Add html extension
+    const pageName = `${cleanedSlideTitle}.html`;
+    // Return the path where the html page will be placed
+    return `slides/${index}/${pageName}`;
+  }
+
+  /*
     Create a cover object adding the image name and the paths of all formats
   */
-  createCover(coverName) {
+  generateSlideCoverPaths(coverName) {
     return {
       file: coverName,
       format: {
@@ -44,20 +56,15 @@ class Generator {
     };
   }
 
-  /*
-   Method to create an url and an index for each slide
-   */
-  fixSlides(slides) {
-    return slides.map((slide, i) => {
-      slide.index = i + 1;
-      const baseUrl = utils.generateSlideUrl(slide.title, slide.index);
-      slide.url = baseUrl;
-      slide.path = baseUrl;
-      if (slide.cover && typeof slide.cover === 'string') {
-        slide.cover = this.createCover(slide.cover);
-      }
-      return slide;
-    });
+  fixSlide(slide, index) {
+    slide.index = index + 1;
+    const baseUrl = this.generateSlideUrl(slide.title, slide.index);
+    slide.url = baseUrl;
+    slide.path = baseUrl;
+    if (slide.cover && typeof slide.cover === 'string') {
+      slide.cover = this.generateSlideCoverPaths(slide.cover);
+    }
+    return slide;
   }
 
   /*
@@ -99,7 +106,7 @@ class Generator {
           )
         );
       });
-      return Promise.all(promises)
+      Promise.all(promises)
         .then(results => resolve(results))
         .catch(error => reject(error));
     });
@@ -108,59 +115,47 @@ class Generator {
   /*
    Method to compile the needed view for a given version
    */
-  compileViews(data, cb) {
+  compileViews(data) {
     return new Promise((resolve, reject) => {
-      data.slides = this.fixSlides(data.slides);
+      data.slides.map((slide, i) => {
+        return this.fixSlide(slide, i);
+      });
+
       Promise.all([
         this.compileIndexView(data),
         this.compileSlideViews(data)
       ])
-        .then(results => {
-          if (cb) {
-            cb(null, results);
-          }
-          resolve(results);
-        })
-        .catch(error => {
-          if (cb) {
-            cb(error);
-          }
-          reject(error);
-        });
+        .then(results => resolve(results))
+        .catch(error => reject(error));
     });
+  }
+
+  setSassFunctions(config) {
+    const functions = {};
+    functions['getThemeConfig()'] = () => {
+      return sassUtils.castToSass(config);
+    };
+    return functions;
+    // TODO: cast  items attributes colors to sass colors
   }
 
   /*
    Method to compile the selected theme style
    */
-  compileStyles(sassConfig, themeConfig, cb) {
+  compileStyles(sassConfig, themeConfig) {
     return new Promise((resolve, reject) => {
-      if (!sassConfig.functions) {
-        sassConfig.functions = {};
-      }
-      // Add template data to sass function
-      sassConfig.functions['getThemeConfig()'] = () => {
-        return sassUtils.castToSass(themeConfig);
-      };
+      sassConfig.functions = _.merge(
+        sassConfig.functions || {},
+        this.setSassFunctions(themeConfig));
       tasks.compileStyle(
         path.join(this.pathLocator.getPath('sources.styles'), '**', '*.scss'),
         this.pathLocator.getPath('destinations.styles'),
         'style.css',
         sassConfig,
         this[sIsRelease]
-        )
-        .then(results => {
-          if (cb) {
-            cb(null, results);
-          }
-          resolve(results);
-        })
-        .catch(error => {
-          if (cb) {
-            cb(error);
-          }
-          reject(error);
-        });
+      )
+        .then(results => resolve(results))
+        .catch(error => reject(error));
     });
   }
 
