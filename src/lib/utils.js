@@ -17,24 +17,6 @@ export function cleanUrl(url) {
   return cleanUrl;
 }
 /*
- Utility function to generate the url of a single slide
- */
-export function generateSlideUrl(title, index) {
-  // TODO
-  // check if are passed in all parameters
-  // Check parameters
-  // Slide must be a string
-  // Index must be a number
-  // Lang must be a string
-  // Clean the title to make it an sane url
-  // It will be the name of the page for the given slide
-  const cleanedSlideTitle = this.cleanUrl(title.toLowerCase());
-  // Add html extension
-  const pageName = `${cleanedSlideTitle}.html`;
-  // Return the path where the html page will be placed
-  return `slides/${index}/${pageName}`;
-}
-/*
  Utility to recursively list files inside a folder
  */
 export function listFile(dir, fullPath, filelist = []) {
