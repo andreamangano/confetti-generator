@@ -1,5 +1,9 @@
 'use strict';
 import slideNavigation from './../src/lib/slideNavigation';
+
+//-----------------------
+// SLIDE NAVIGATION TESTS
+//-----------------------
 describe('SlideNavigation', function() {
   const slides = [
     {title: 'Slide1'},
@@ -29,7 +33,11 @@ describe('SlideNavigation', function() {
       hasPrev: true
     }
   ];
-  describe('constructor( slides, index, isPrimary, lan )', function() {
+
+  //------------
+  // CONSTRUCTOR
+  //------------
+  describe('constructor(slides, index, isPrimary, lan)', function() {
     const _wrongIndexValues = [Infinity, -Infinity, '10', 0.1];
     for(let i = 0; i < _wrongIndexValues.length; i++) {
       it(`given "${_wrongIndexValues[i]}" as index value, should throw`, function() {
@@ -39,6 +47,10 @@ describe('SlideNavigation', function() {
       });
     }
   });
+
+  //-----
+  // NEXT
+  //-----
   describe('next', function() {
     for(let i = 0; i < expectedValues.length; i++) {
       it(`given index ${i}, should work as expected`, function() {
@@ -52,6 +64,10 @@ describe('SlideNavigation', function() {
       });
     }
   });
+
+  //-----
+  // PREV
+  //-----
   describe('prev', function() {
     for(let i = 0; i < expectedValues.length; i++) {
       it(`given index ${i}, should work as expected`, function() {
@@ -65,6 +81,10 @@ describe('SlideNavigation', function() {
       });
     }
   });
+
+  //--------
+  // CURRENT
+  //--------
   describe('current', function() {
     let nav;
     for(let i = 0; i < expectedValues.length; i++) {
@@ -75,6 +95,10 @@ describe('SlideNavigation', function() {
       });
     }
   });
+
+  //---------
+  // HAS NEXT
+  //---------
   describe('hasNext', function() {
     let nav;
     for(let i = 0; i < expectedValues.length; i++) {
@@ -84,6 +108,10 @@ describe('SlideNavigation', function() {
       });
     }
   });
+
+  //---------
+  // HAS PREV
+  //---------
   describe('haPrev', function() {
     let nav;
     for(let i = 0; i < expectedValues.length; i++) {
@@ -93,6 +121,10 @@ describe('SlideNavigation', function() {
       });
     }
   });
+
+  //---------
+  // OVERVIEW
+  //---------
   describe('overview', function() {
     it('should equal to /', function() {
       const nav = slideNavigation.create(slides, 0);

@@ -7,6 +7,9 @@ import validator from 'tv4';
 import slideSchema from './schemes/slide';
 validator.addSchema('slide', slideSchema);
 
+//----------------
+// GENERATOR TESTS
+//----------------
 describe('Generator', function() {
   // increase default timeout in case assert operations take too long (i/o usage)
   this.timeout(8000);

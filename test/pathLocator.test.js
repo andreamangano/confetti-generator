@@ -1,25 +1,36 @@
 'use strict';
 import PathLocator from './../src/lib/pathLocator';
-describe("PathLocator", function() {
+
+//-------------------
+// PATH LOCATOR TESTS
+//-------------------
+describe('PathLocator', function() {
   const objPaths = {
     sources: {
       index: 'index/path'
     }
   };
+
+  //------------
+  // CONSTRUCTOR
+  //------------
   describe('constructor()', function() {
+
     it('should be created with one properties: paths', () => {
       const _pathLocator = new PathLocator();
       _pathLocator.should.have.property('paths');
     });
-    it('if no parameter is passed in, should create an empty object' +
-      ' paths', function() {
+
+    it(`if no parameter is passed in, should create an empty object paths`, function() {
       const _pathLocator = new PathLocator();
       _pathLocator.paths.should.be.an('object').and.be.empty;
     });
+
     it('if paths obj is passed in, should set it as paths', function() {
       const _pathLocator = new PathLocator(objPaths);
       _pathLocator.paths.should.equal(objPaths);
     });
+
     it('if undefined obj is passed in, should throw', function() {
       (function() {
         const _undefinedObj = undefined;
@@ -27,16 +38,23 @@ describe("PathLocator", function() {
       }).should.throw(Error);
     });
   });
+
+  //------
+  // PATHS
+  //------
   describe('paths', function() {
-    it('should throw if it is not a object', function() {
+
+    it('should throw whether it is not an object', function() {
       (function() {
         new PathLocator('It is a string param');
       }).should.throw(Error);
     });
+
     it('should return the right objPaths value', function() {
       const _pathLocator = new PathLocator(objPaths);
       _pathLocator.paths.should.equal(objPaths);
     });
+
     it('should set the right objPaths value', function() {
       const _pathLocator = new PathLocator(objPaths);
       const _newObjPaths = {'destinations': 'destinations/path'};
@@ -44,13 +62,23 @@ describe("PathLocator", function() {
       _pathLocator.paths.should.equal(_newObjPaths);
     });
   });
-  describe('getPath( path )', function() {
+
+  //---------
+  // GET PATH
+  //---------
+  describe('getPath(path)', function() {
+
     it('should throw if it is not a object', function() {
       const _pathLocator = new PathLocator(objPaths);
       _pathLocator.getPath('sources.index').should.equal('index/path');
     });
   });
-  describe('setPath( path, value )', function() {
+
+  //---------
+  // SET PATH
+  //---------
+  describe('setPath(path, value)', function() {
+
     it('should throw if it is not a object', function() {
       const _pathLocator = new PathLocator(objPaths);
       const _indexPath = 'slide/path';
