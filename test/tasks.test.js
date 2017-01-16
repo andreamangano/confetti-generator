@@ -8,7 +8,7 @@ describe("Tasks", function() {
   // increase default timeout in case assert operations take too long (i/o usage)
   this.timeout(8000);
   const temp = path.join(__dirname, 'temp');
-  describe("compileView( src, dest, fileName, locals, release )", function() {
+  describe('compileView(src, dest, fileName, locals, release)', function() {
     const _src = path.join(temp, 'template.pug');
     const _srcWrongFile = path.join(temp, 'template-2.pug');
     const _expectedFile = 'template-compiled.html';
@@ -52,10 +52,9 @@ describe("Tasks", function() {
       tasks.compileView(_srcWrongFile, temp, _expectedFile, _locals, true).should.be.rejectedWith(Error).notify(done);
     });
   });
-  describe("compileStyle( src, dest, filename, sassConfig, release )", function() {
+  describe('compileStyle(src, dest, filename, sassConfig, release)', function() {
     const _src = path.join(temp, 'style.scss');
-    const _fileContent = "$primary-color: #ff0000; body { background-color:" +
-      " $primary-color; }";
+    const _fileContent = `$primary-color: #ff0000; body { background-color: $primary-color; }`;
     const _expectedFile = 'style.css';
     const _sassConfig = {};
     before(function() {

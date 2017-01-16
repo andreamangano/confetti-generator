@@ -32,14 +32,4 @@ describe('Utils', function() {
       }).should.throw(Error);
     });
   });
-  describe('generateSlideUrl( title, index )', function() {
-    let urlRegex = /slides\/[0-9]*\/[a-z0-9-]*.html/;
-    it('should return a string', function() {
-      utils.generateSlideUrl('my title', 1).should.be.an('string');
-    });
-    it(`should match ${urlRegex}`, function() {
-      let url = utils.generateSlideUrl('my title', 1);
-      url.should.match(urlRegex);
-    })
-  });
 });
