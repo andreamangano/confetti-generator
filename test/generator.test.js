@@ -23,9 +23,9 @@ describe('Generator', function() {
   const data = {
     theme: 'lena',
     slides: [
-      {title: 'Slide 1', url: 'slides/1/slide-1.html'},
-      {title: 'Slide 2', url: 'slides/2/slide-2.html'},
-      {title: 'Slide 3', url: 'slides/3/slide-3.html'}
+      {title: 'Slide 1', url: 'slides/1/slide-1.html', path: 'slides/1/slide-1.html'},
+      {title: 'Slide 2', url: 'slides/2/slide-2.html', path: 'slides/2/slide-2.html'},
+      {title: 'Slide 3', url: 'slides/3/slide-3.html', path: 'slides/3/slide-3.html'}
     ],
     translations: []
   };
@@ -74,12 +74,12 @@ describe('Generator', function() {
       fs.writeFileSync(_src, `h1= 'Slide' + slide.title`, 'utf8');
       fs.writeFileSync(_srcWrongFile, 'include ./includes/header.pug', 'utf8');
     });
-    it('should render all template data', function(done) {
+    it('should render all views templates', function(done) {
       generator.compileSlideViews(data).then(
         () => {
           let pathSlide;
-          data.slides.forEach((slide) => {
-            pathSlide = path.join(temp, slide.url);
+          data.slides.forEach(slide => {
+            pathSlide = path.join(temp, slide.path);
             fs.existsSync(pathSlide).should.equal(true);
           });
           del.sync([_src, path.join(temp, 'slides')]);

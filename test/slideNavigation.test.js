@@ -96,7 +96,7 @@ describe('SlideNavigation', function() {
   describe('overview', function() {
     it('should equal to /', function() {
       const nav = slideNavigation.create(slides, 0);
-      should.equal(nav.overview, '/');
+      should.equal(nav.overview, 'index.html');
     });
   });
 });
