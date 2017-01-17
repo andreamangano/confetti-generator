@@ -150,7 +150,7 @@ class Generator {
       tasks.compileStyle(
         path.join(this.pathLocator.getPath('sources.styles'), '**', '*.scss'),
         this.pathLocator.getPath('destinations.styles'),
-        'style.css',
+        'styles.css',
         sassConfig,
         this[sIsRelease]
       )

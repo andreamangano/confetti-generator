@@ -46,7 +46,7 @@ describe('Generator', function() {
   // CONSTRUCTOR
   //------------
   describe('constructor(paths)', function() {
-    it('should be created with one properties: pathLocator', function() {
+    it('should be created with one property: pathLocator', function() {
       const _generator = new Generator(paths, true);
       _generator.should.have.property('pathLocator');
     });
@@ -177,7 +177,7 @@ describe('Generator', function() {
   //-------------------
   describe('setSassFunctions( config )', function() {
 
-    it('should return an object with functions inside', function() {
+    it('should return an object with a set of functions inside', function() {
       const sassFunctions = generator.setSassFunctions();
       for (const key in sassFunctions) {
         if (sassFunctions.hasOwnProperty(key)) {

@@ -90,7 +90,7 @@ export function compileStyle(src, dest, filename, sassConfig, release) {
           })
         ])
       ),
-      $.rename(filename),
+      $.if(filename, $.rename(filename)),
       $.if(release, $.sourcemaps.write('.')),
       gulp.dest(dest)
     ], err => {
