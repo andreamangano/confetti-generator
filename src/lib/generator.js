@@ -165,9 +165,10 @@ class Generator {
   /*
    Method to compile scripts
    */
-  compileJavascripts() {
+  compileJavascripts(sourcesPath) {
+    const _sourcesPath = sourcesPath || path.join(this.pathLocator.getPath('sources.javascript'), '**', '*.js');
     return tasks.compileJavascripts(
-      path.join(this.pathLocator.getPath('sources.javascript'), '**', '*.js'),
+      _sourcesPath,
       this.pathLocator.getPath('destinations.javascript'),
       this[sIsRelease]
     );
@@ -176,9 +177,10 @@ class Generator {
   /*
    Method to compile fonts
    */
-  copyFonts() {
+  copyFonts(sourcesPath) {
+    const _sourcesPath = sourcesPath || path.join(this.pathLocator.getPath('sources.fonts'), '**', '*.{eot,ttf,otf,woff,svg}');
     return tasks.copy(
-      path.join(this.pathLocator.getPath('sources.fonts'), '**', '*.{eot,ttf,otf,woff,svg}'),
+      _sourcesPath,
       this.pathLocator.getPath('destinations.fonts')
     );
   }
@@ -186,17 +188,19 @@ class Generator {
   /*
    Method to copy deck images (covers included):
    */
-  copyDeckImages() {
+  copyDeckImages(sourcesPath, destinationPath) {
+    const _sourcesPath = sourcesPath || path.join(this.pathLocator.getPath('sources.deckImages'), '**', '*.{svg,png,jpg,jpeg,gif}');
+    const _destinationPath = destinationPath || this.pathLocator.getPath('destinations.deckImages');
     return tasks.copy(
-      path.join(this.pathLocator.getPath('sources.deckImages'), '**', '*.{svg,png,jpg,jpeg,gif}'),
-      this.pathLocator.getPath('destinations.deckImages')
+      _sourcesPath,
+      _destinationPath
     );
   }
 
   /*
    Method to resize covers Images
    */
-  resizeCovers() {
+  resizeCovers(sourcesPath) {
     return new Promise((resolve, reject) => {
       const promises = [];
       // TODO: Get theme config from data
@@ -204,34 +208,45 @@ class Generator {
         width: 300,
         quality: 90
       };
-      const coversDir = this.pathLocator.getPath('sources.covers');
-      if (utils.dirExists(coversDir)) {
-        utils.listFile(this.pathLocator.getPath('sources.covers'))
-          .filter(file => {
-            return /\.(jpe?g|png|gif)$/i.test(file);
-          })
-          .forEach((file, i) => {
-            promises[i] = tasks.resizeImage(
-              path.join(this.pathLocator.getPath('sources.covers'), file),
-              path.join(this.pathLocator.getPath('destinations.covers'), `small-${file}`),
-              settings
-            );
-          });
+
+      if (sourcesPath) {
+        const fileName = sourcesPath.replace(/^.*[/\\]/, '');
+        tasks.resizeImage(
+          sourcesPath,
+          path.join(this.pathLocator.getPath('destinations.covers'), `small-${fileName}`),
+          settings)
+            .then(() => resolve())
+            .catch(error => reject(error));
+      } else {
+        const coversDir = this.pathLocator.getPath('sources.covers');
+        if (utils.dirExists(coversDir)) {
+          utils.listFile(this.pathLocator.getPath('sources.covers'))
+            .filter(file => {
+              return /\.(jpe?g|png|gif)$/i.test(file);
+            })
+            .forEach((file, i) => {
+              promises[i] = tasks.resizeImage(
+                path.join(this.pathLocator.getPath('sources.covers'), file),
+                path.join(this.pathLocator.getPath('destinations.covers'), `small-${file}`),
+                settings
+              );
+            });
+        }
+        return Promise.all(promises)
+          .then(results => resolve(results))
+          .catch(error => reject(error));
       }
-      return Promise.all(promises)
-        .then(results => resolve(results))
-        .catch(error => reject(error));
     });
   }
 
   /*
     Copy the deck images, then resize the cover.
   */
-  compileDeckImages() {
+  compileDeckImages(sourcesPath, destinationPath) {
     return new Promise((resolve, reject) => {
-      this.copyDeckImages()
+      this.copyDeckImages(sourcesPath, destinationPath)
         .then(() => {
-          this.resizeCovers()
+          this.resizeCovers(sourcesPath)
             .then(() => resolve())
             .catch(err => reject(err));
         })
@@ -242,9 +257,10 @@ class Generator {
   /*
    Method to compile theme images
    */
-  copyImages() {
+  copyImages(sourcesPath) {
+    const _sourcesPath = sourcesPath || path.join(this.pathLocator.getPath('sources.images'), '**', '*.{svg,png,jpg,jpeg,gif}');
     return tasks.copy(
-      path.join(this.pathLocator.getPath('sources.images'), '**', '*.{svg,png,jpg,jpeg,gif}'),
+      _sourcesPath,
       this.pathLocator.getPath('destinations.images')
     );
   }
