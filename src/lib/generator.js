@@ -113,10 +113,13 @@ class Generator {
   }
 
   /*
-   Method to compile the needed view for a given version
+   Method to compile the needed views
    */
   compileViews(data) {
     return new Promise((resolve, reject) => {
+      if (data.cover && typeof data.cover === 'string') {
+        data.cover = this.generateSlideCoverPaths(data.cover);
+      }
       data.slides.map((slide, i) => {
         return this.fixSlide(slide, i);
       });
