@@ -1,7 +1,7 @@
 'use strict';
 require('babel-polyfill');
 import _ from 'lodash';
-import * as tasks from './tasks';
+import tasks from './tasks';
 import * as utils from './utils';
 import PathLocator from './pathLocator';
 import sass from 'node-sass';
@@ -51,7 +51,8 @@ class Generator {
       file: coverName,
       format: {
         original: path.join(this.pathLocator.getPath('to.covers'), coverName),
-        small: path.join(this.pathLocator.getPath('to.covers'), `small-${coverName}`)
+        large: path.join(this.pathLocator.getPath('to.covers'), `large__${coverName}`),
+        small: path.join(this.pathLocator.getPath('to.covers'), `small__${coverName}`)
       }
     };
   }
@@ -204,17 +205,24 @@ class Generator {
     return new Promise((resolve, reject) => {
       const promises = [];
       // TODO: Get theme config from data
-      const settings = {
-        width: 300,
-        quality: 90
+      const formats = {
+        large: {
+          width: 1200,
+          quality: 90
+        },
+        small: {
+          width: 300,
+          quality: 90
+        }
       };
 
       if (sourcesPath) {
         const fileName = sourcesPath.replace(/^.*[/\\]/, '');
-        tasks.resizeImage(
+        tasks.resizeImageFromFormats(
           sourcesPath,
-          path.join(this.pathLocator.getPath('destinations.covers'), `small-${fileName}`),
-          settings)
+          this.pathLocator.getPath('destinations.covers'),
+          fileName,
+          formats)
             .then(() => resolve())
             .catch(error => reject(error));
       } else {
@@ -225,11 +233,11 @@ class Generator {
               return /\.(jpe?g|png|gif)$/i.test(file);
             })
             .forEach((file, i) => {
-              promises[i] = tasks.resizeImage(
+              promises[i] = tasks.resizeImageFromFormats(
                 path.join(this.pathLocator.getPath('sources.covers'), file),
-                path.join(this.pathLocator.getPath('destinations.covers'), `small-${file}`),
-                settings
-              );
+                path.join(this.pathLocator.getPath('destinations.covers')),
+                file,
+                formats);
             });
         }
         return Promise.all(promises)

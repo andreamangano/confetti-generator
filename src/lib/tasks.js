@@ -6,11 +6,12 @@ import mqpacker from 'css-mqpacker';
 import pump from 'pump';
 // import scssLint from 'gulp-scss-lint';
 import jimp from 'jimp';
+import path from 'path';
 const $ = gulpLoadPlugins();
 /*
  Generic function to compile a single view
  */
-export function compileView(src, dest, fileName, locals, release) {
+function compileView(src, dest, fileName, locals, release) {
   return new Promise((resolve, reject) => {
     // Set options for pug
     const pugOptions = {
@@ -41,7 +42,7 @@ export function compileView(src, dest, fileName, locals, release) {
 /*
  Generic function to javascript
  */
-export function compileJavascripts(src, dest, release) {
+function compileJavascripts(src, dest, release) {
   return new Promise((resolve, reject) => {
     pump([
       gulp.src(src),
@@ -58,7 +59,7 @@ export function compileJavascripts(src, dest, release) {
 /*
  Generic function to compile style
  */
-export function compileStyle(src, dest, filename, sassConfig, release) {
+function compileStyle(src, dest, filename, sassConfig, release) {
   return new Promise((resolve, reject) => {
     // TODO: move as parameter
     const AUTOPREFIXER_BROWSERS = [
@@ -104,7 +105,7 @@ export function compileStyle(src, dest, filename, sassConfig, release) {
 /*
  Generic function to copy files
  */
-export function copy(src, dest) {
+function copy(src, dest) {
   // TODO: add optimizer
   return new Promise((resolve, reject) => {
     pump([
@@ -121,23 +122,41 @@ export function copy(src, dest) {
 /*
  Generic function to resize a given image
  */
-export function resizeImage(src, dest, settings) {
-  const _settings = Object.assign({
-    width: 250,
-    quality: 80
-  }, settings);
+function resizeImage(src, dest, fileName, format) {
   return new Promise((resolve, reject) => {
     jimp.read(src).then(image => {
-      image.resize(_settings.width, jimp.AUTO)
-        .quality(_settings.quality)
-        .write(dest, err => {
-          if (err) {
-            reject(err);
-          }
-          resolve(image);
-        });
-    }).catch(err => {
-      reject(err);
-    });
+      if (image.bitmap.width > format.width) {
+        image.resize(format.width, jimp.AUTO)
+          .quality(format.quality);
+      }
+      image.write(path.join(dest, fileName), err => {
+        if (err) {
+          reject(err);
+        }
+        resolve(image);
+      });
+    }).catch(err => reject(err));
   });
 }
+
+function resizeImageFromFormats(src, dest, fileName, formats) {
+  return new Promise((resolve, reject) => {
+    const promises = [];
+    Object.keys(formats).forEach((key, i) => {
+      promises[i] = resizeImage(src, dest, `${key}__${fileName}`, formats[key]);
+    });
+    Promise.all(promises)
+      .then(() => resolve())
+      .catch(err => reject(err));
+  });
+}
+
+export default {
+  compileView,
+  compileJavascripts,
+  compileStyle,
+  copy,
+  resizeImage,
+  resizeImageFromFormats
+};
+
