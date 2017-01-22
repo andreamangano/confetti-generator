@@ -1,5 +1,5 @@
 'use strict';
-import * as tasks from './../src/lib/tasks';
+import tasks from './../src/lib/tasks';
 import path from 'path';
 import fs from 'fs';
 import del from 'del';

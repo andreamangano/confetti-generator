@@ -112,7 +112,7 @@ describe('SlideNavigation', function() {
   //---------
   // HAS PREV
   //---------
-  describe('haPrev', function() {
+  describe('hasPrev', function() {
     let nav;
     for(let i = 0; i < expectedValues.length; i++) {
       it(`given index ${i}, should work as expected`, function() {
